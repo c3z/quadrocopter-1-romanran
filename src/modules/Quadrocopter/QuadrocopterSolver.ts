@@ -1,5 +1,5 @@
-import { getDistanceBetweenTwoPoints } from '@/helpers/calculations'
-import { IPosition } from '@/interfaces/coordinates'
+import { getDistanceBetweenTwoPoints } from 'src/helpers/calculations'
+import { IPosition } from 'src/interfaces/coordinates'
 import { checkIfTransmittersInRange } from './helpers'
 
 export interface ITransmitter {

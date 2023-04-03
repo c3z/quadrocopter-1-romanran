@@ -1,21 +1,16 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.EResult = void 0;
-const calculations_1 = require("@/helpers/calculations");
-const helpers_1 = require("./helpers");
-var EResult;
+import { getDistanceBetweenTwoPoints } from 'src/helpers/calculations';
+import { checkIfTransmittersInRange } from './helpers';
+export var EResult;
 (function (EResult) {
-    EResult["NO_START_RT"] = "No transmitter in range of starting position";
-    EResult["SUCCESS"] = "Quadrocopter can fly to it's destination";
-    EResult["FAIL"] = "Quadrocopter can't fly to it's destination";
-})(EResult = exports.EResult || (exports.EResult = {}));
-class QuadrocopterSolver {
-    constructor() {
-        this.start = { x: 0, y: 0 };
-        this.end = { x: 0, y: 0 };
-        this.transmitters = [];
-        this.visitedTransmitters = new Set();
-    }
+    EResult[EResult["NO_START_RT"] = 0] = "NO_START_RT";
+    EResult[EResult["SUCCESS"] = 1] = "SUCCESS";
+    EResult[EResult["FAIL"] = 2] = "FAIL";
+})(EResult || (EResult = {}));
+export default class QuadrocopterSolver {
+    start = { x: 0, y: 0 };
+    end = { x: 0, y: 0 };
+    transmitters = [];
+    visitedTransmitters = new Set();
     setStart(x, y) {
         this.start = { x, y };
     }
@@ -31,7 +26,6 @@ class QuadrocopterSolver {
             y: this.start.y,
             r: 0
         });
-        console.log({ startingTransmitter });
         if (!startingTransmitter) {
             return EResult.NO_START_RT;
         }
@@ -39,7 +33,7 @@ class QuadrocopterSolver {
     }
     // recursively find transmitter in range of the qopter
     flyCopter(currentTransmitterInRange) {
-        const endIsInTransmitterRange = (0, calculations_1.getDistanceBetweenTwoPoints)(currentTransmitterInRange, this.end) <= currentTransmitterInRange.r;
+        const endIsInTransmitterRange = getDistanceBetweenTwoPoints(currentTransmitterInRange, this.end) <= currentTransmitterInRange.r;
         if (endIsInTransmitterRange) {
             return EResult.SUCCESS;
         }
@@ -58,11 +52,10 @@ class QuadrocopterSolver {
             if (copterVisitedTransmitter) {
                 continue;
             }
-            if ((0, helpers_1.checkIfTransmittersInRange)(currentTransmitterInRange, transmitter)) {
+            if (checkIfTransmittersInRange(currentTransmitterInRange, transmitter)) {
                 return transmitter;
             }
         }
         return false;
     }
 }
-exports.default = QuadrocopterSolver;
