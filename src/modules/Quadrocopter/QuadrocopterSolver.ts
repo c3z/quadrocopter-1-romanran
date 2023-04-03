@@ -1,5 +1,5 @@
-import { getDistanceBetweenTwoPoints } from 'src/helpers/calculations'
-import { IPosition } from 'src/interfaces/coordinates'
+import { getDistanceBetweenTwoPoints } from '../../helpers/calculations'
+import { IPosition } from '../../interfaces/coordinates'
 import { checkIfTransmittersInRange } from './helpers'
 
 export interface ITransmitter {
@@ -12,6 +12,10 @@ export enum EResult {
     NO_START_RT,
     SUCCESS,
     FAIL
+}
+export interface IResult {
+    result: EResult
+    parameter?: object | string | number | undefined
 }
 
 export default class QuadrocopterSolver {
@@ -29,7 +33,7 @@ export default class QuadrocopterSolver {
     public setTransmitters(transmitters: ITransmitter[]) {
         this.transmitters = transmitters
     }
-    public solve(): EResult {
+    public solve(): IResult {
         const startingTransmitter = this.findNextTransmitter({
             x: this.start.x,
             y: this.start.y,
@@ -37,16 +41,16 @@ export default class QuadrocopterSolver {
         })
 
         if (!startingTransmitter) {
-            return EResult.NO_START_RT
+            return { result: EResult.NO_START_RT }
         }
         return this.flyCopter(startingTransmitter)
     }
 
     // recursively find transmitter in range of the qopter
-    private flyCopter(currentTransmitterInRange: ITransmitter): EResult {
+    private flyCopter(currentTransmitterInRange: ITransmitter): IResult {
         const endIsInTransmitterRange = getDistanceBetweenTwoPoints(currentTransmitterInRange, this.end) <= currentTransmitterInRange.r
         if (endIsInTransmitterRange) {
-            return EResult.SUCCESS
+            return { result: EResult.SUCCESS }
         }
 
         const nextTransmitter = this.findNextTransmitter(currentTransmitterInRange)
@@ -55,7 +59,7 @@ export default class QuadrocopterSolver {
             this.visitedTransmitters.add(currentTransmitterInRange)
             return this.flyCopter(nextTransmitter)
         } else {
-            return EResult.FAIL
+            return { result: EResult.FAIL, parameter: currentTransmitterInRange }
         }
     }
 

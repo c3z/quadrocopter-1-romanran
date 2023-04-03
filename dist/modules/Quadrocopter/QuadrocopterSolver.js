@@ -1,4 +1,4 @@
-import { getDistanceBetweenTwoPoints } from 'src/helpers/calculations';
+import { getDistanceBetweenTwoPoints } from '../../helpers/calculations';
 import { checkIfTransmittersInRange } from './helpers';
 export var EResult;
 (function (EResult) {
@@ -27,7 +27,7 @@ export default class QuadrocopterSolver {
             r: 0
         });
         if (!startingTransmitter) {
-            return EResult.NO_START_RT;
+            return { result: EResult.NO_START_RT };
         }
         return this.flyCopter(startingTransmitter);
     }
@@ -35,7 +35,7 @@ export default class QuadrocopterSolver {
     flyCopter(currentTransmitterInRange) {
         const endIsInTransmitterRange = getDistanceBetweenTwoPoints(currentTransmitterInRange, this.end) <= currentTransmitterInRange.r;
         if (endIsInTransmitterRange) {
-            return EResult.SUCCESS;
+            return { result: EResult.SUCCESS };
         }
         const nextTransmitter = this.findNextTransmitter(currentTransmitterInRange);
         if (nextTransmitter) {
@@ -43,7 +43,7 @@ export default class QuadrocopterSolver {
             return this.flyCopter(nextTransmitter);
         }
         else {
-            return EResult.FAIL;
+            return { result: EResult.FAIL, parameter: currentTransmitterInRange };
         }
     }
     findNextTransmitter(currentTransmitterInRange) {
